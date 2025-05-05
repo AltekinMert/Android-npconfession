@@ -25,11 +25,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.text.format.DateUtils;
 /** Binds Post objects to item_post.xml cards. */
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostVH> {
 
     public interface Callbacks {
-        void onSwipeDelete(Post p);
+        void onSwipeDelete(Post post);
         void onLongPressFavorite(Post p);
     }
 
@@ -54,6 +55,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostVH> {
 
         h.tvMsg .setText(p.message);
         h.tvSong.setText(p.songTitle + " • " + p.songArtist);
+        CharSequence relTime = DateUtils.getRelativeTimeSpanString(
+                p.timestamp,
+                System.currentTimeMillis(),
+                DateUtils.SECOND_IN_MILLIS
+        );
+        h.tvTime.setText(relTime);
 
         Glide.with(h.itemView)
                 .load(p.coverUrl)
@@ -69,13 +76,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostVH> {
     public Post getAt(int pos)           { return data.get(pos); }
 
     static class PostVH extends RecyclerView.ViewHolder {
-        TextView tvMsg, tvSong;
+        TextView tvMsg, tvSong, tvTime;
         ImageView imgCover;
         PostVH(View v){
             super(v);
             tvMsg  = v.findViewById(R.id.tvMessage);
             tvSong = v.findViewById(R.id.tvSong);
             imgCover = v.findViewById(R.id.imgCover);
+            tvTime = v.findViewById(R.id.tvTime);
         }
     }
 

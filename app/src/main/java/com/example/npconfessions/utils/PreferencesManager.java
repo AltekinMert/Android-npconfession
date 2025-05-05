@@ -19,7 +19,9 @@ public class PreferencesManager {
     }
 
     /* ---------- Dark-mode toggle (future use) ---------- */
-    public boolean isDarkMode()           { return prefs.getBoolean(KEY_DARK, false); }
+    public boolean isDarkMode() {
+        return prefs.getBoolean("dark_mode", false);
+    }
     public void setDarkMode(boolean v)    { prefs.edit().putBoolean(KEY_DARK, v).apply(); }
 
     /* ---------- Song-link provider ---------- */
@@ -28,5 +30,7 @@ public class PreferencesManager {
 
     /* ---------- Worker interval (hrs) ---------- */
     public int  getSyncInterval()         { return prefs.getInt(KEY_INTERVAL, 6); }
-    public void setSyncInterval(int h)    { prefs.edit().putInt(KEY_INTERVAL, h).apply(); }
+    public int getSyncIntervalMinutes() {
+        return Integer.parseInt(prefs.getString("sync_interval_h", "360"));
+    }
 }

@@ -1,10 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Deezer / Spotify toggle -->
     <ListPreference
         android:key="link_provider"
         android:title="Open songs with"
         android:entries="@array/provider_names"
         android:entryValues="@array/provider_values"
         android:defaultValue="deezer"/>
+
+    <!-- Dark Mode toggle -->
+    <SwitchPreferenceCompat
+        android:key="dark_mode"
+        android:title="Dark Mode"
+        android:summary="Use dark theme UI"
+        android:defaultValue="false"/>
+
+    <!-- Sync Interval -->
+    <ListPreference
+        android:key="sync_interval_h"
+        android:title="Sync Interval"
+        android:summary="How often to fetch trending songs"
+        android:entries="@array/sync_intervals"
+        android:entryValues="@array/sync_values"
+        android:defaultValue="6"/>
+
+
 </PreferenceScreen>

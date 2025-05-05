@@ -2,15 +2,21 @@ package com.example.npconfessions.data;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 /** Single feed item (anonymous thought + music). */
-@Entity(tableName = "posts")
+@Entity(
+        tableName = "posts",
+        indices = @Index(value = "cloudId", unique = true)
+)
 public class Post {
 
     @PrimaryKey(autoGenerate = true)
     public long id;
-
+    @NonNull
+    public String cloudId  = "";   // must be non-null
+    public String ownerUid = "";    // Who created it (for permission)
     @NonNull
     public String message = "";
 
@@ -26,3 +32,4 @@ public class Post {
     public long    timestamp;
     public boolean favorite;
 }
+

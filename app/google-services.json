@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "949476522582",
+    "project_id": "npconfessions-676d5",
+    "storage_bucket": "npconfessions-676d5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949476522582:android:deee0a370aab4d728ad9f7",
+        "android_client_info": {
+          "package_name": "com.example.npconfessions"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-OlDVoMBfFiqIJpmVF0JebGwRBULXRl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,13 +11,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.npconfessions.R;
 import com.example.npconfessions.data.Post;
 import com.example.npconfessions.data.Repository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -89,37 +94,78 @@ public class AddPostActivity extends AppCompatActivity {
 
     /* ----- Validate + insert into Room ----- */
     private void savePost() {
+        // ---------- 1. Validate user + text ----------------------------
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) {
+            toast("Authentication error"); return;
+        }
+        String uid  = auth.getCurrentUser().getUid();
         String msg  = editMsg.getText().toString().trim();
         String song = editSong.getText().toString().trim();
-        if (msg.isEmpty()){ editMsg.setError("Say something…"); return; }
 
-        /* If user typed a title but never pressed 'Attach', get link quickly */
-        if (song.length()>0 && deezerUrl.isEmpty()){
+        if (msg.isEmpty()) {
+            editMsg.setError("Say something…");
+            return;
+        }
+
+        // ---------- 2. Ensure Deezer link if user never clicked 'Attach' -----------
+        if (song.length() > 0 && deezerUrl.isEmpty()) {
             try {
                 Response<JsonObject> r = repo.getApiService().searchTrack(song, 1).execute();
-                if (r.isSuccessful() && r.body()!=null){
+                if (r.isSuccessful() && r.body() != null) {
                     JsonArray arr = r.body().getAsJsonArray("data");
-                    if (arr!=null && arr.size()>0)
-                        deezerUrl = arr.get(0).getAsJsonObject().get("link").getAsString();
+                    if (arr != null && arr.size() > 0) {
+                        JsonObject o = arr.get(0).getAsJsonObject();
+                        deezerUrl = o.get("link").getAsString();
+                        coverUrl  = o.getAsJsonObject("album")
+                                .get("cover_medium").getAsString();
+                    }
                 }
             } catch (IOException ignored) {}
         }
 
-        Post p = new Post();
-        p.message = msg;
-        if (!song.isEmpty()){
-            String[] s = song.split(" • ");
-            p.songTitle  = s[0];
-            p.songArtist = (s.length>1) ? s[1] : "";
-        }
-        p.deezerUrl = deezerUrl;
-        p.timestamp = System.currentTimeMillis();
-        p.coverUrl = coverUrl;
+        // ---------- 3. Generate Firestore doc ID BEFORE local insert --------------
+        DocumentReference docRef =
+                FirebaseFirestore.getInstance().collection("posts").document();
+        String docId = docRef.getId();
 
+        // ---------- 4. Build Post object with that cloudId -------------------------
+        Post p = new Post();
+        p.cloudId  = docId;            // <<< unique & non-null
+        p.ownerUid = uid;
+        p.message  = msg;
+
+        if (!song.isEmpty()) {
+            String[] parts = song.split(" • ", 2);
+            p.songTitle  = parts[0];
+            if (parts.length > 1) p.songArtist = parts[1];
+        }
+
+        p.deezerUrl = deezerUrl;
+        p.coverUrl  = coverUrl;
+        p.timestamp = System.currentTimeMillis();
+
+        // ---------- 5. Insert locally (Room) ---------------------------------------
         repo.insert(p);
+
+        // ---------- 6. Upload same data to Firestore ------------------------------
+        Map<String, Object> map = new HashMap<>();
+        map.put("uid",        uid);
+        map.put("message",    p.message);
+        map.put("songTitle",  p.songTitle);
+        map.put("songArtist", p.songArtist);
+        map.put("deezerUrl",  p.deezerUrl);
+        map.put("coverUrl",   p.coverUrl);
+        map.put("timestamp",  p.timestamp);
+
+        docRef.set(map)       // `.set()` uses the pre-generated doc ID
+                .addOnFailureListener(e ->
+                        toast("Cloud upload failed: " + e.getMessage()));
+
         toast("Posted!");
         finish();
     }
+
 
     private void toast(String m){ Toast.makeText(this, m, Toast.LENGTH_SHORT).show(); }
 }

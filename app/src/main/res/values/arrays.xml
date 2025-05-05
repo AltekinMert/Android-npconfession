@@ -1,10 +1,23 @@
 <resources>
     <string-array name="provider_names">
-        <item>Deezer (preview)</item>
-        <item>Spotify (search)</item>
+        <item>Deezer (Preview)</item>
+        <item>Spotify (Search)</item>
     </string-array>
     <string-array name="provider_values">
         <item>deezer</item>
         <item>spotify</item>
+    </string-array>
+
+    <string-array name="sync_intervals">
+        <item>15 minutes</item>
+        <item>1 hour</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+    </string-array>
+    <string-array name="sync_values">
+        <item>15</item>
+        <item>60</item>
+        <item>360</item>
+        <item>720</item>
     </string-array>
 </resources>
