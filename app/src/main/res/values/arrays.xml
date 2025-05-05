@@ -1,0 +1,10 @@
+<resources>
+    <string-array name="provider_names">
+        <item>Deezer (preview)</item>
+        <item>Spotify (search)</item>
+    </string-array>
+    <string-array name="provider_values">
+        <item>deezer</item>
+        <item>spotify</item>
+    </string-array>
+</resources>

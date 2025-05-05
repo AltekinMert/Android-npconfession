@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="link_provider"
+        android:title="Open songs with"
+        android:entries="@array/provider_names"
+        android:entryValues="@array/provider_values"
+        android:defaultValue="deezer"/>
+</PreferenceScreen>
